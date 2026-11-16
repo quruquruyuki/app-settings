@@ -45,6 +45,14 @@
     padding:10px 16px; border-radius:10px; font-size:14px; opacity:0; transition:.3s; pointer-events:none; max-width:90vw; z-index:20; }
   .toast.show { opacity:1; }
   .login { max-width:360px; margin:40px auto; }
+  .price { display:block; color:var(--sub); font-size:12px; margin-top:3px; }
+  .upd { border-top:1px solid var(--line); padding:10px 0 4px; }
+  .upd:first-child { border-top:none; }
+  .upd .ttl { font-size:14px; font-weight:600; }
+  .cand { display:flex; align-items:center; gap:8px; margin-top:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .cand .t { flex:1; min-width:0; font-size:14px; }
+  .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; margin-left:4px; }
+  .badge.ok { background:#dbeddb; color:var(--green); }
 </style>
 </head>
 <body>
@@ -66,6 +74,14 @@
 <!-- 設定 -->
 <main id="appView" class="hidden">
   <div class="hint">ここで変えた内容は、各アプリの次の操作から（遅くとも1分以内に）反映されます。</div>
+
+  <h2>モデルの更新</h2>
+  <div class="card">
+    <div id="updList"></div>
+    <small id="updAt"></small>
+    <div class="row"><button id="updCheck">今すぐ確認</button></div>
+    <div class="hint" style="margin-top:8px">毎週月曜の朝に、各社の新しいモデルを自動で確認します。切り替えはボタンを押したときだけです（使っているモデルの提供が終わったときだけは、止まらないように自動で切り替えます）。</div>
+  </div>
 
   <h2>為替レート（全アプリ共通）</h2>
   <div class="card">
@@ -128,7 +144,71 @@ async function api(body) {
 const fmtAt = s => s ? new Date(s).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) + " 更新" : "";
 let SETTINGS = [];
 
+// ── 値段の表示（料金表の単価から。円は今の為替レートで計算）──
+const PRICES = () => SETTINGS.find(s => s.app==="global" && s.key==="prices")?.value || {};
+const RATE = () => Number(SETTINGS.find(s => s.app==="global" && s.key==="usd_jpy")?.value) || 160;
+const yen = usd => { const y = usd*RATE(); return y < 10 ? y.toFixed(1) : Math.round(y).toLocaleString(); };
+function priceOf(model, suggested) {
+  const p = PRICES();
+  if (p[model + "_per_min"] != null) return { type:"per_min", usd:p[model + "_per_min"] };
+  if (p[model]) return { type:"tokens", ...p[model] };
+  return suggested || null;
+}
+function priceText(model, suggested) {
+  const p = priceOf(model, suggested);
+  if (!p) return "料金表に単価がありません";
+  if (p.type === "per_min") return `1分 $${p.usd}（1時間 約${yen(p.usd*60)}円）`;
+  return `100万トークンあたり 入力 $${p.in}・出力 $${p.out}（約${yen(p.in)}円・${yen(p.out)}円）` + (p.ain ? `／音声入力 $${p.ain}` : "");
+}
+
+function renderUpdates() {
+  const chk = SETTINGS.find(s => s.app==="system" && s.key==="model_check")?.value;
+  $("updAt").textContent = chk ? "最後の確認：" + new Date(chk.checked_at).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "まだ確認していません";
+  const appName = Object.fromEntries(APPS);
+  const live = (it) => SETTINGS.find(s => s.app===it.app && s.key===it.key);
+  // 反映済み（いまの設定がもう候補になっている）の知らせは出さない
+  const items = (chk?.items || []).filter(it => { const s = live(it); return s && (it.status==="switched" ? s.value===it.switchedTo : s.value===it.current); });
+  let html = items.map(it => {
+    const s = live(it);
+    const head = `<div class="ttl">${esc(appName[it.app] || it.app)}：${esc(s.note || it.key)}</div>`;
+    if (it.status === "switched") return `<div class="upd">${head}<div class="hint">「${esc(it.current)}」の提供が終わったため、「${esc(it.switchedTo)}」に自動で切り替えました。</div></div>`;
+    if (it.status === "retired") return `<div class="upd">${head}<div class="hint">「${esc(it.current)}」の提供が終わったようです。代わりのモデルを手で入れてください。</div></div>`;
+    return `<div class="upd">${head}<div class="hint">いま：${esc(it.current)}<br>${esc(priceText(it.current))}</div>` +
+      it.candidates.map(c => {
+        const sp = it.suggestedPrices?.[c];
+        const inTable = !!priceOf(c); // 料金表に単価がある
+        const note = inTable ? "" : sp ? `<span class="badge">AIが調べた単価・要確認</span>${sp.url ? ` <a href="${esc(sp.url)}" target="_blank" rel="noopener">出典</a>` : ""}` : "";
+        return `<div class="cand"><div class="t"><b>${esc(c)}</b><span class="price">${esc(priceText(c, sp))}</span>${note}</div>
+          <button class="primary" data-app="${esc(it.app)}" data-key="${esc(it.key)}" data-model="${esc(c)}">これに替える</button></div>`;
+      }).join("") + `</div>`;
+  }).join("");
+  if (!html) html = `<div class="hint" style="padding-top:8px">新しいモデルは見つかっていません。</div>`;
+  if (chk?.errors?.length) html += `<div class="hint" style="margin-top:6px">確認できなかった会社：${esc(chk.errors.join("、"))}</div>`;
+  $("updList").innerHTML = html;
+  $("updList").querySelectorAll("button[data-model]").forEach(b => b.onclick = () => applyCandidate(b));
+}
+
+async function applyCandidate(btn) {
+  const { app, key, model } = btn.dataset;
+  const chk = SETTINGS.find(s => s.app==="system" && s.key==="model_check")?.value;
+  const sp = (chk?.items || []).find(it => it.app===app && it.key===key)?.suggestedPrices?.[model];
+  if (!confirm(`${model} に切り替えます。よろしいですか？`)) return;
+  btn.disabled = true;
+  try {
+    // 料金表に単価がなければ、調べた単価も一緒に入れる
+    if (sp && !priceOf(model)) {
+      const prices = { ...PRICES() };
+      if (sp.type === "per_min") prices[model + "_per_min"] = sp.usd;
+      else prices[model] = sp.ain != null ? { ain:sp.ain, in:sp.in, out:sp.out } : { in:sp.in, out:sp.out };
+      await api({ action:"update", app:"global", key:"prices", value:prices });
+    }
+    await api({ action:"update", app, key, value:model });
+    toast(`${model} に切り替えました`); await load();
+  } catch (e) { toast(e.message, 4000); btn.disabled = false; }
+}
+
 function render() {
+  renderUpdates();
   const fx = SETTINGS.find(s => s.app==="global" && s.key==="usd_jpy");
   $("fxVal").textContent = fx ? fx.value : "—";
   $("fxAt").textContent = fx ? fmtAt(fx.updated_at) : "";
@@ -141,12 +221,13 @@ function render() {
       <div class="item" data-app="${esc(s.app)}" data-key="${esc(s.key)}">
         <div class="name">${esc(s.note || s.key)}</div>
         <div class="line"><input list="models" value="${esc(s.value)}" data-orig="${esc(s.value)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="primary" disabled>保存</button></div>
+        <span class="price">${esc(priceText(s.value))}</span>
         <small>${esc(s.key)}　${esc(fmtAt(s.updated_at))}</small>
       </div>`).join("") + `</div>`;
   }).join("");
   document.querySelectorAll("#apps .item").forEach(el => {
     const input = el.querySelector("input"), btn = el.querySelector("button");
-    input.oninput = () => btn.disabled = input.value.trim() === input.dataset.orig;
+    input.oninput = () => { btn.disabled = input.value.trim() === input.dataset.orig; el.querySelector(".price").textContent = priceText(input.value.trim()); };
     btn.onclick = () => save(el.dataset.app, el.dataset.key, input.value.trim(), btn);
   });
 
@@ -181,6 +262,13 @@ $("fxRefresh").onclick = async () => {
   try { const d = await api({ action:"refresh_fx" }); toast(`1ドル＝${d.usd_jpy}円 に更新しました`); await load(); }
   catch (e) { toast(e.message, 4000); }
   b.disabled = false; b.textContent = "今すぐ取り直す";
+};
+
+$("updCheck").onclick = async () => {
+  const b = $("updCheck"); b.disabled = true; b.textContent = "確認中…（30秒ほど）";
+  try { const d = await api({ action:"check_models" }); toast(d.items?.length ? `${d.items.length}件見つかりました` : "新しいモデルはありませんでした"); await load(); }
+  catch (e) { toast(e.message, 4000); }
+  b.disabled = false; b.textContent = "今すぐ確認";
 };
 
 $("priceSave").onclick = () => {

@@ -13,8 +13,11 @@
 - このページは Edge Function `app-settings` 経由で読み書きする。ログインできるのは `ALLOWED_EMAIL` のアカウントだけ
 - 変更できるのは、すでに登録されている項目だけ（新しい項目はSQLで追加する）
 - ドル円は Edge Function `update-fx` が毎朝 9:07（JST）に自動更新する（pg_cron）
+- 新しいモデルは Edge Function `check-models` が毎週月曜 9:13（JST）に確認する（pg_cron）。候補は管理ページに出て、ボタンで切り替える。使っているモデルの提供が終わったときだけ自動で後継に切り替える
+- 料金表にない候補の単価は、check-models がAIのウェブ検索で公式ページから調べ、出典付きの「候補」として出す（反映時に料金表へ入る）
 
 ## ファイル
 
 - `index.html` … 管理ページ（GitHub Pages で公開）
 - `supabase/functions/app-settings/index.ts` … 読み書き用の Edge Function
+- `supabase/functions/check-models/index.ts` … 新しいモデルの確認用の Edge Function

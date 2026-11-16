@@ -1,5 +1,5 @@
 // 共通設定（app_settings）の管理ページ用 Edge Function
-// action: list（一覧） / update（1件更新） / refresh_fx（ドル円を今すぐ取り直す）
+// action: list（一覧） / update（1件更新） / refresh_fx（ドル円を今すぐ取り直す） / check_models（新しいモデルを今すぐ確認）
 // ログインした ALLOWED_EMAIL のアカウントだけが使える。書き込みはこの関数（service role）経由のみ
 // 使うシークレット: ALLOWED_EMAIL（他のアプリと共用）
 
@@ -85,6 +85,13 @@ Deno.serve(async (req) => {
       const r = await fetch(`${SB_URL}/functions/v1/update-fx`, { method: "POST", body: "{}" });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error ?? `取り直せませんでした (${r.status})`);
+      return json(d);
+    }
+
+    if (body.action === "check_models") {
+      const r = await fetch(`${SB_URL}/functions/v1/check-models`, { method: "POST", body: "{}" });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error ?? `確認できませんでした (${r.status})`);
       return json(d);
     }
 
