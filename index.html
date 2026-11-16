@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="共通設定">
+<meta name="theme-color" content="#ffffff">
+<title>共通設定</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2337352f'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='white'%3E⚙%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --fg:#37352f; --sub:#787774; --line:#e9e9e7; --bg:#fff; --soft:#f7f6f3; --red:#e03e3e; --blue:#2383e2; --green:#2b593f; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif; color:var(--fg); background:var(--bg); font-size:16px; }
+  header { position:sticky; top:0; background:rgba(255,255,255,.95); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+    padding:calc(env(safe-area-inset-top) + 10px) 16px 10px; display:flex; align-items:center; gap:8px; z-index:5; }
+  header h1 { font-size:18px; margin:0; flex:1; }
+  main { padding:16px; padding-bottom:calc(env(safe-area-inset-bottom) + 40px); max-width:720px; margin:0 auto; }
+  button { font:inherit; color:inherit; background:none; border:1px solid var(--line); border-radius:8px; padding:8px 12px; }
+  button.primary { background:var(--fg); color:#fff; border-color:var(--fg); }
+  button:disabled { opacity:.35; }
+  label { display:block; font-size:13px; color:var(--sub); margin:14px 0 4px; }
+  input, textarea { width:100%; font:inherit; color:inherit; border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
+  textarea { min-height:220px; font-family:ui-monospace,Menlo,monospace; font-size:13px; line-height:1.5; }
+  h2 { font-size:15px; margin:28px 0 4px; }
+  .hint { color:var(--sub); font-size:13px; line-height:1.6; }
+  .card { background:var(--soft); border-radius:10px; padding:4px 12px 12px; margin-top:8px; }
+  .item { padding-top:10px; }
+  .item .name { font-size:13px; color:var(--sub); margin-bottom:4px; }
+  .item .line { display:flex; gap:8px; }
+  .item .line input { flex:1; min-width:0; }
+  .item small { color:var(--sub); font-size:12px; }
+  .fx { display:flex; align-items:baseline; gap:6px; margin:6px 0 2px; }
+  .fx b { font-size:34px; font-variant-numeric:tabular-nums; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+  th, td { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
+  th { color:var(--sub); font-weight:500; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  details summary { cursor:pointer; color:var(--blue); font-size:14px; margin-top:12px; }
+  .hidden { display:none !important; }
+  .toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%); background:var(--fg); color:#fff;
+    padding:10px 16px; border-radius:10px; font-size:14px; opacity:0; transition:.3s; pointer-events:none; max-width:90vw; z-index:20; }
+  .toast.show { opacity:1; }
+  .login { max-width:360px; margin:40px auto; }
+</style>
+</head>
+<body>
+
+<header><h1>共通設定</h1><button id="logout" class="hidden">ログアウト</button></header>
+
+<!-- ログイン -->
+<main id="loginView" class="hidden">
+  <div class="login">
+    <div class="hint">自作アプリ共通の設定です。いつものアカウントでログインしてください。</div>
+    <form id="loginForm">
+      <label>メールアドレス</label><input id="lEmail" type="email" autocomplete="username" required>
+      <label>パスワード</label><input id="lPass" type="password" autocomplete="current-password" required>
+      <div class="row"><button class="primary" style="width:100%">ログイン</button></div>
+    </form>
+  </div>
+</main>
+
+<!-- 設定 -->
+<main id="appView" class="hidden">
+  <div class="hint">ここで変えた内容は、各アプリの次の操作から（遅くとも1分以内に）反映されます。</div>
+
+  <h2>為替レート（全アプリ共通）</h2>
+  <div class="card">
+    <div class="fx"><span>1ドル＝</span><b id="fxVal">—</b><span>円</span></div>
+    <small id="fxAt"></small>
+    <div class="row">
+      <button id="fxRefresh">今すぐ取り直す</button>
+    </div>
+    <div class="hint" style="margin-top:8px">毎朝9時ごろに自動で更新されます（欧州中央銀行のデータ、無料）。</div>
+  </div>
+
+  <div id="apps"></div>
+
+  <h2>料金の単価（USD）</h2>
+  <div class="card">
+    <table id="priceTable"></table>
+    <div class="hint" style="margin-top:6px">トークン単位は100万トークンあたり（in＝入力、ain＝音声入力、out＝出力）。分単位は1分あたり。料金表示の計算に使います。</div>
+    <details>
+      <summary>単価を編集する</summary>
+      <textarea id="priceJson" spellcheck="false"></textarea>
+      <div class="row"><button class="primary" id="priceSave">料金表を保存</button></div>
+    </details>
+  </div>
+</main>
+
+<datalist id="models">
+  <option value="claude-haiku-5-5"><option value="claude-sonnet-5-5"><option value="claude-opus-5-5">
+  <option value="gpt-transcribe"><option value="gpt-live-transcribe"><option value="gpt-4o-transcribe">
+  <option value="gpt-6-luna"><option value="gpt-6.1-terra">
+  <option value="gemini-3.5-flash"><option value="gemini-3.5-flash-lite">
+</datalist>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL = "https://oqtyorwlrnrcyjxiassg.supabase.co";
+const FN = SB_URL + "/functions/v1/app-settings";
+const sb = supabase.createClient(SB_URL, "sb_publishable_5KRsDfHG07lsUL7uUr6zpQ_2ehucxbJ");
+const $ = id => document.getElementById(id);
+const toast = (m, ms=2500) => { const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"), ms); };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+// アプリの表示名と並び順
+const APPS = [
+  ["minutes", "議事録"], ["quick-note", "Notion Quick"], ["sake-wine-log", "酒ログ"], ["diary", "日記"],
+];
+
+async function api(body) {
+  const { data } = await sb.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) { showLogin(); throw new Error("ログインしてください"); }
+  const r = await fetch(FN, { method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body:JSON.stringify(body) });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { showLogin(); throw new Error(d.error || "ログインし直してください"); }
+  if (!r.ok) throw new Error(d.error || `エラー (${r.status})`);
+  return d;
+}
+
+const fmtAt = s => s ? new Date(s).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) + " 更新" : "";
+let SETTINGS = [];
+
+function render() {
+  const fx = SETTINGS.find(s => s.app==="global" && s.key==="usd_jpy");
+  $("fxVal").textContent = fx ? fx.value : "—";
+  $("fxAt").textContent = fx ? fmtAt(fx.updated_at) : "";
+
+  // アプリごとのモデル
+  $("apps").innerHTML = APPS.map(([app, name]) => {
+    const rows = SETTINGS.filter(s => s.app===app);
+    if (!rows.length) return "";
+    return `<h2>${esc(name)}</h2><div class="card">` + rows.map(s => `
+      <div class="item" data-app="${esc(s.app)}" data-key="${esc(s.key)}">
+        <div class="name">${esc(s.note || s.key)}</div>
+        <div class="line"><input list="models" value="${esc(s.value)}" data-orig="${esc(s.value)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="primary" disabled>保存</button></div>
+        <small>${esc(s.key)}　${esc(fmtAt(s.updated_at))}</small>
+      </div>`).join("") + `</div>`;
+  }).join("");
+  document.querySelectorAll("#apps .item").forEach(el => {
+    const input = el.querySelector("input"), btn = el.querySelector("button");
+    input.oninput = () => btn.disabled = input.value.trim() === input.dataset.orig;
+    btn.onclick = () => save(el.dataset.app, el.dataset.key, input.value.trim(), btn);
+  });
+
+  // 料金表
+  const prices = SETTINGS.find(s => s.app==="global" && s.key==="prices")?.value || {};
+  const tok = Object.entries(prices).filter(([k, v]) => typeof v === "object");
+  const min = Object.entries(prices).filter(([k, v]) => typeof v === "number");
+  $("priceTable").innerHTML =
+    `<tr><th>モデル</th><th class="n">in</th><th class="n">ain</th><th class="n">out</th></tr>` +
+    tok.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${esc(v.in)}</td><td class="n">${esc(v.ain ?? "")}</td><td class="n">${esc(v.out)}</td></tr>`).join("") +
+    `<tr><th>分単位のモデル</th><th></th><th></th><th class="n">／分</th></tr>` +
+    min.map(([k, v]) => `<tr><td>${esc(k.replace(/_per_min$/, ""))}</td><td></td><td></td><td class="n">${esc(v)}</td></tr>`).join("");
+  $("priceJson").value = JSON.stringify(prices, null, 2);
+}
+
+async function load() {
+  try { SETTINGS = (await api({ action:"list" })).settings; render(); }
+  catch (e) { toast(e.message, 4000); }
+}
+
+async function save(app, key, value, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const { setting } = await api({ action:"update", app, key, value });
+    SETTINGS = SETTINGS.map(s => s.app===app && s.key===key ? setting : s);
+    render(); toast("保存しました");
+  } catch (e) { toast(e.message, 4000); if (btn) btn.disabled = false; }
+}
+
+$("fxRefresh").onclick = async () => {
+  const b = $("fxRefresh"); b.disabled = true; b.textContent = "取得中…";
+  try { const d = await api({ action:"refresh_fx" }); toast(`1ドル＝${d.usd_jpy}円 に更新しました`); await load(); }
+  catch (e) { toast(e.message, 4000); }
+  b.disabled = false; b.textContent = "今すぐ取り直す";
+};
+
+$("priceSave").onclick = () => {
+  let v;
+  try { v = JSON.parse($("priceJson").value); } catch { return toast("書き方が正しくありません（JSON）", 3500); }
+  save("global", "prices", v, $("priceSave"));
+};
+
+// ===== ログイン =====
+function showLogin() { $("loginView").classList.remove("hidden"); $("appView").classList.add("hidden"); $("logout").classList.add("hidden"); }
+function showApp() { $("loginView").classList.add("hidden"); $("appView").classList.remove("hidden"); $("logout").classList.remove("hidden"); load(); }
+$("loginForm").onsubmit = async e => {
+  e.preventDefault();
+  const { error } = await sb.auth.signInWithPassword({ email:$("lEmail").value.trim(), password:$("lPass").value });
+  if (error) return toast("ログインできませんでした", 3500);
+  $("lPass").value = ""; showApp();
+};
+$("logout").onclick = async () => { await sb.auth.signOut(); showLogin(); };
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("appView").classList.contains("hidden")) load(); });
+(async () => { const { data } = await sb.auth.getSession(); data.session ? showApp() : showLogin(); })();
+</script>
+</body>
+</html>
