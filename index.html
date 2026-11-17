@@ -20,52 +20,68 @@
   main { padding:16px; padding-bottom:calc(env(safe-area-inset-bottom) + 40px); max-width:720px; margin:0 auto; }
   button { font:inherit; color:inherit; background:none; border:1px solid var(--line); border-radius:8px; padding:8px 12px; }
   button.primary { background:var(--fg); color:#fff; border-color:var(--fg); }
+  button.small { padding:6px 10px; font-size:14px; }
   button:disabled { opacity:.35; }
   label { display:block; font-size:13px; color:var(--sub); margin:14px 0 4px; }
-  input, textarea { width:100%; font:inherit; color:inherit; border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
+  input, select, textarea { width:100%; font:inherit; color:inherit; border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
+  select { -webkit-appearance:none; appearance:none; padding-right:30px;
+    background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23787774' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center; }
   textarea { min-height:220px; font-family:ui-monospace,Menlo,monospace; font-size:13px; line-height:1.5; }
-  h2 { font-size:15px; margin:28px 0 4px; }
+  h2 { font-size:15px; margin:28px 0 6px; }
+  h2:first-of-type { margin-top:16px; }
   .hint { color:var(--sub); font-size:13px; line-height:1.6; }
-  .card { background:var(--soft); border-radius:10px; padding:4px 12px 12px; margin-top:8px; }
-  .item { padding-top:10px; }
-  .item .name { font-size:13px; color:var(--sub); margin-bottom:4px; }
-  .item .line { display:flex; gap:8px; }
-  .item .line input { flex:1; min-width:0; }
-  .item small { color:var(--sub); font-size:12px; }
-  .fx { display:flex; align-items:baseline; gap:6px; margin:6px 0 2px; }
-  .fx b { font-size:34px; font-variant-numeric:tabular-nums; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
-  th, td { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
-  th { color:var(--sub); font-weight:500; }
-  td.n { text-align:right; font-variant-numeric:tabular-nums; }
-  details summary { cursor:pointer; color:var(--blue); font-size:14px; margin-top:12px; }
+  .card { background:var(--soft); border-radius:10px; padding:4px 12px 12px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
   .hidden { display:none !important; }
   .toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%); background:var(--fg); color:#fff;
     padding:10px 16px; border-radius:10px; font-size:14px; opacity:0; transition:.3s; pointer-events:none; max-width:90vw; z-index:20; }
   .toast.show { opacity:1; }
-  .links { display:flex; flex-direction:column; gap:8px; padding-top:10px; }
+  .login { max-width:360px; margin:40px auto; }
+
+  /* アプリ */
+  .apps { display:flex; flex-direction:column; gap:8px; }
+  details.app { background:var(--soft); border-radius:10px; }
+  details.app > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:12px; }
+  details.app > summary::-webkit-details-marker { display:none; }
+  details.app > summary .chev { width:10px; color:var(--sub); font-size:20px; line-height:1; transition:transform .15s; }
+  details.app[open] > summary .chev { transform:rotate(90deg); }
+  details.app > summary .nm { flex:1; min-width:0; }
+  details.app > summary .nm b { display:block; font-size:16px; }
+  details.app > summary .nm small { display:block; color:var(--sub); font-size:12px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); margin-left:6px; vertical-align:middle; }
+  a.open { flex:none; text-decoration:none; color:var(--fg); background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:14px; }
+  .noai { display:flex; align-items:center; gap:10px; background:var(--soft); border-radius:10px; padding:12px 12px 12px 32px; }
+  .noai .nm { flex:1; min-width:0; }
+  .noai .nm b { display:block; font-size:16px; }
+  .noai .nm small { color:var(--sub); font-size:12px; }
+  .models { padding:0 12px 12px; }
+  .item { border-top:1px solid var(--line); padding:10px 0 2px; }
+  .item:first-child { border-top:none; padding-top:0; }
+  .item .name { font-size:13px; color:var(--sub); margin-bottom:6px; }
+  .item .line { display:flex; gap:8px; }
+  .item .line select, .item .line input { flex:1; min-width:0; }
+  .price { display:block; color:var(--sub); font-size:12px; margin-top:4px; }
+  .notice { margin-top:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; line-height:1.5; }
+  .notice .row { margin-top:6px; }
+  .notice .t { flex:1; min-width:0; }
+  .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; }
+
+  /* お金まわり */
+  .sub { font-size:13px; color:var(--sub); font-weight:600; margin:14px 0 6px; }
+  .fx { display:flex; align-items:center; gap:10px; padding-top:10px; }
+  .fx .v { flex:1; }
+  .fx b { font-size:26px; font-variant-numeric:tabular-nums; }
+  .fx small { display:block; color:var(--sub); font-size:12px; }
+  .links { display:flex; flex-direction:column; gap:8px; }
   .links a { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--fg); background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
   .links a b { flex:1; font-weight:600; }
   .links a span { color:var(--sub); font-size:12px; }
   .links a::after { content:"›"; color:var(--sub); font-size:20px; line-height:1; }
-  details.app { margin-top:10px; }
-  details.app > summary { color:var(--fg); margin-top:0; font-size:inherit; list-style:none; cursor:pointer; display:flex; align-items:center; gap:8px; padding:6px 0; }
-  details.app > summary::-webkit-details-marker { display:none; }
-  details.app > summary::before { content:"›"; display:inline-block; width:12px; color:var(--sub); font-size:20px; line-height:1; transition:transform .15s; }
-  details.app[open] > summary::before { transform:rotate(90deg); }
-  details.app > summary b { font-size:15px; }
-  details.app > summary span { flex:1; min-width:0; color:var(--sub); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:right; }
-  details.app[open] > summary span { visibility:hidden; }
-  .login { max-width:360px; margin:40px auto; }
-  .price { display:block; color:var(--sub); font-size:12px; margin-top:3px; }
-  .upd { border-top:1px solid var(--line); padding:10px 0 4px; }
-  .upd:first-child { border-top:none; }
-  .upd .ttl { font-size:14px; font-weight:600; }
-  .cand { display:flex; align-items:center; gap:8px; margin-top:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
-  .cand .t { flex:1; min-width:0; font-size:14px; }
-  .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; margin-left:4px; }
-  .badge.ok { background:#dbeddb; color:var(--green); }
+  details.more > summary { cursor:pointer; color:var(--blue); font-size:14px; margin-top:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+  th, td { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
+  th { color:var(--sub); font-weight:500; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
 </style>
 </head>
 <body>
@@ -86,70 +102,42 @@
 
 <!-- 設定 -->
 <main id="appView" class="hidden">
-  <div class="hint">ここで変えた内容は、各アプリの次の操作から（遅くとも1分以内に）反映されます。</div>
 
-  <h2>アプリ一覧</h2>
+  <h2>アプリ</h2>
+  <div class="apps" id="apps"></div>
+  <div class="hint" style="margin-top:8px">「開く」でアプリへ。名前をタップすると使うAIモデルを変えられます（各アプリには1分以内に反映）。</div>
+
+  <h2>お金まわり</h2>
   <div class="card">
-    <div class="links">
-      <a href="https://quruquruyuki.github.io/minutes/" target="_blank" rel="noopener"><b>議事録</b><span>録音・文字起こし・議事録／セミナーノート</span></a>
-      <a href="https://quruquruyuki.github.io/quick-note/" target="_blank" rel="noopener"><b>Notion Quick</b><span>Notionへのクイック入力</span></a>
-      <a href="https://quruquruyuki.github.io/sake-wine-log/" target="_blank" rel="noopener"><b>酒ログ</b><span>ワイン・日本酒などの記録</span></a>
-      <a href="https://quruquruyuki.github.io/diary/" target="_blank" rel="noopener"><b>日記</b><span>日記と過去の自分との対話</span></a>
-      <a href="https://quruquruyuki.github.io/pdf-app/" target="_blank" rel="noopener"><b>PDFノート</b><span>PDFの閲覧・書き込み</span></a>
-      <a href="https://quruquruyuki.github.io/workout-log/" target="_blank" rel="noopener"><b>運動ログ</b><span>筋トレ・ランの記録</span></a>
-      <a href="https://quruquruyuki.github.io/stock-trader/" target="_blank" rel="noopener"><b>株ラボ</b><span>株の自動売買の検証</span></a>
+    <div class="fx">
+      <div class="v">1ドル＝<b id="fxVal">—</b>円<small id="fxAt"></small></div>
+      <button class="small" id="fxRefresh">取り直す</button>
     </div>
-    <div class="hint" style="margin-top:8px">別の端末で開くときはここから。開いたあと、共有ボタンの「ホーム画面に追加」でアイコンにできます。</div>
-  </div>
+    <div class="hint" style="margin-top:4px">料金の円表示はこのレートで計算します。毎朝9時ごろ自動更新。</div>
 
-  <h2>残高を見る</h2>
-  <div class="card">
+    <div class="sub">残高を見る（各社の管理画面）</div>
     <div class="links">
       <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener"><b>Claude（Anthropic）</b><span>残高・入金</span></a>
       <a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" rel="noopener"><b>OpenAI</b><span>残高・入金</span></a>
       <a href="https://platform.openai.com/settings/organization/usage" target="_blank" rel="noopener"><b>OpenAI</b><span>使用量</span></a>
     </div>
-    <div class="hint" style="margin-top:8px">各社の管理画面が開きます（ログインが必要です）。残高はAPIでは取れないため、ここから見に行きます。</div>
-  </div>
 
-  <h2>モデルの更新</h2>
-  <div class="card">
-    <div id="updList"></div>
-    <small id="updAt"></small>
-    <div class="row"><button id="updCheck">今すぐ確認</button></div>
-    <div class="hint" style="margin-top:8px">毎週月曜の朝に、各社の新しいモデルを自動で確認します。切り替えはボタンを押したときだけです（使っているモデルの提供が終わったときだけは、止まらないように自動で切り替えます）。</div>
-  </div>
-
-  <h2>為替レート（全アプリ共通）</h2>
-  <div class="card">
-    <div class="fx"><span>1ドル＝</span><b id="fxVal">—</b><span>円</span></div>
-    <small id="fxAt"></small>
-    <div class="row">
-      <button id="fxRefresh">今すぐ取り直す</button>
-    </div>
-    <div class="hint" style="margin-top:8px">毎朝9時ごろに自動で更新されます（欧州中央銀行のデータ、無料）。</div>
-  </div>
-
-  <div id="apps"></div>
-
-  <h2>料金の単価（USD）</h2>
-  <div class="card">
-    <table id="priceTable"></table>
-    <div class="hint" style="margin-top:6px">トークン単位は100万トークンあたり（in＝入力、ain＝音声入力、out＝出力）。分単位は1分あたり。料金表示の計算に使います。</div>
-    <details>
-      <summary>単価を編集する</summary>
+    <details class="more">
+      <summary>料金の単価（一覧・編集）</summary>
+      <table id="priceTable"></table>
+      <div class="hint" style="margin-top:6px">トークン単位は100万トークンあたりのドル（in＝入力、ain＝音声入力、out＝出力）。分単位は1分あたりのドル。</div>
       <textarea id="priceJson" spellcheck="false"></textarea>
       <div class="row"><button class="primary" id="priceSave">料金表を保存</button></div>
     </details>
   </div>
-</main>
 
-<datalist id="models">
-  <option value="claude-haiku-5-5"><option value="claude-sonnet-5-5"><option value="claude-opus-5-5">
-  <option value="gpt-transcribe"><option value="gpt-live-transcribe"><option value="gpt-4o-transcribe">
-  <option value="gpt-6-luna"><option value="gpt-6.1-terra">
-  <option value="gemini-3.5-flash"><option value="gemini-3.5-flash-lite">
-</datalist>
+  <h2>新しいモデルの確認</h2>
+  <div class="card">
+    <div class="hint" id="updStatus" style="padding-top:10px"></div>
+    <div class="row"><button class="small" id="updCheck">今すぐ確認</button></div>
+    <div class="hint" style="margin-top:8px">毎週月曜の朝に自動で確認し、新しい版があれば該当アプリの欄に表示します。切り替えはボタンを押したときだけ（使っているモデルの提供が終わったときだけは自動で切り替えます）。</div>
+  </div>
+</main>
 
 <div class="toast" id="toast"></div>
 
@@ -162,10 +150,17 @@ const $ = id => document.getElementById(id);
 const toast = (m, ms=2500) => { const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"), ms); };
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
-// アプリの表示名と並び順
+// アプリの一覧（id は共通設定の app 名＝リポジトリ名）。AIを使わないアプリは「開く」だけ
 const APPS = [
-  ["minutes", "議事録"], ["quick-note", "Notion Quick"], ["sake-wine-log", "酒ログ"], ["diary", "日記"],
+  { id:"minutes",       name:"議事録",       desc:"録音・文字起こし・議事録／セミナーノート" },
+  { id:"quick-note",    name:"Notion Quick", desc:"Notionへのクイック入力" },
+  { id:"sake-wine-log", name:"酒ログ",       desc:"ワイン・日本酒などの記録" },
+  { id:"diary",         name:"日記",         desc:"日記と過去の自分との対話" },
+  { id:"pdf-app",       name:"PDFノート",    desc:"PDFの閲覧・書き込み" },
+  { id:"workout-log",   name:"運動ログ",     desc:"筋トレ・ランの記録" },
+  { id:"stock-trader",  name:"株ラボ",       desc:"株の自動売買の検証" },
 ];
+const urlOf = id => `https://quruquruyuki.github.io/${id}/`;
 
 async function api(body) {
   const { data } = await sb.auth.getSession();
@@ -178,15 +173,15 @@ async function api(body) {
   return d;
 }
 
-const fmtAt = s => s ? new Date(s).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) + " 更新" : "";
+const fmtAt = s => s ? new Date(s).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "";
 let SETTINGS = [];
-// 折り畳みの状態（最初はすべて閉じる）
 let OPEN = new Set();
 try { OPEN = new Set(JSON.parse(localStorage.getItem("settings-open-apps") || "[]")); } catch {}
 
-// ── 値段の表示（料金表の単価から。円は今の為替レートで計算）──
-const PRICES = () => SETTINGS.find(s => s.app==="global" && s.key==="prices")?.value || {};
-const RATE = () => Number(SETTINGS.find(s => s.app==="global" && s.key==="usd_jpy")?.value) || 160;
+// ── 値段（料金表の単価から。円は今の為替レートで計算）──
+const get = (app, key) => SETTINGS.find(s => s.app===app && s.key===key);
+const PRICES = () => get("global","prices")?.value || {};
+const RATE = () => Number(get("global","usd_jpy")?.value) || 160;
 const yen = usd => { const y = usd*RATE(); return y < 10 ? y.toFixed(1) : Math.round(y).toLocaleString(); };
 function priceOf(model, suggested) {
   const p = PRICES();
@@ -200,93 +195,123 @@ function priceText(model, suggested) {
   if (p.type === "per_min") return `1分 $${p.usd}（1時間 約${yen(p.usd*60)}円）`;
   return `100万トークンあたり 入力 $${p.in}・出力 $${p.out}（約${yen(p.in)}円・${yen(p.out)}円）` + (p.ain ? `／音声入力 $${p.ain}` : "");
 }
+// 選択肢に添える短い値段
+function priceShort(model, suggested) {
+  const p = priceOf(model, suggested);
+  if (!p) return "単価なし";
+  if (p.type === "per_min") return `1時間 約${yen(p.usd*60)}円`;
+  if (p.ain) return `音声入力$${p.ain}・出力$${p.out}`;
+  return `入力$${p.in}・出力$${p.out}`;
+}
+const providerOf = m => m.startsWith("claude-") ? "claude" : m.startsWith("gemini-") ? "gemini" : "openai";
+const isAudio = m => /transcribe|whisper/.test(m);
 
-function renderUpdates() {
-  const chk = SETTINGS.find(s => s.app==="system" && s.key==="model_check")?.value;
-  $("updAt").textContent = chk ? "最後の確認：" + new Date(chk.checked_at).toLocaleString("ja-JP", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "まだ確認していません";
-  const appName = Object.fromEntries(APPS);
-  const live = (it) => SETTINGS.find(s => s.app===it.app && s.key===it.key);
-  // 反映済み（いまの設定がもう候補になっている）の知らせは出さない
-  const items = (chk?.items || []).filter(it => { const s = live(it); return s && (it.status==="switched" ? s.value===it.switchedTo : s.value===it.current); });
-  let html = items.map(it => {
-    const s = live(it);
-    const head = `<div class="ttl">${esc(appName[it.app] || it.app)}：${esc(s.note || it.key)}</div>`;
-    if (it.status === "switched") return `<div class="upd">${head}<div class="hint">「${esc(it.current)}」の提供が終わったため、「${esc(it.switchedTo)}」に自動で切り替えました。</div></div>`;
-    if (it.status === "retired") return `<div class="upd">${head}<div class="hint">「${esc(it.current)}」の提供が終わったようです。代わりのモデルを手で入れてください。</div></div>`;
-    return `<div class="upd">${head}<div class="hint">いま：${esc(it.current)}<br>${esc(priceText(it.current))}</div>` +
-      it.candidates.map(c => {
-        const sp = it.suggestedPrices?.[c];
-        const inTable = !!priceOf(c); // 料金表に単価がある
-        const note = inTable ? "" : sp ? `<span class="badge">AIが調べた単価・要確認</span>${sp.url ? ` <a href="${esc(sp.url)}" target="_blank" rel="noopener">出典</a>` : ""}` : "";
-        return `<div class="cand"><div class="t"><b>${esc(c)}</b><span class="price">${esc(priceText(c, sp))}</span>${note}</div>
-          <button class="primary" data-app="${esc(it.app)}" data-key="${esc(it.key)}" data-model="${esc(c)}">これに替える</button></div>`;
-      }).join("") + `</div>`;
-  }).join("");
-  if (!html) html = `<div class="hint" style="padding-top:8px">新しいモデルは見つかっていません。</div>`;
-  if (chk?.errors?.length) html += `<div class="hint" style="margin-top:6px">確認できなかった会社：${esc(chk.errors.join("、"))}</div>`;
-  $("updList").innerHTML = html;
-  $("updList").querySelectorAll("button[data-model]").forEach(b => b.onclick = () => applyCandidate(b));
+// その欄で選べるモデル：今のモデルと同じ会社・同じ種類（文章／録音の文字起こし／話しながらの文字起こし）のもの＋新しい版の候補
+const isLive = m => /live|realtime/.test(m);
+function choicesFor(current, candidates) {
+  const list = new Set([current, ...candidates]);
+  for (const k of Object.keys(PRICES())) {
+    const m = k.replace(/_per_min$/, "");
+    if (providerOf(m) === providerOf(current) && isAudio(m) === isAudio(current) && isLive(m) === isLive(current)) list.add(m);
+  }
+  return [...list];
 }
 
-async function applyCandidate(btn) {
-  const { app, key, model } = btn.dataset;
-  const chk = SETTINGS.find(s => s.app==="system" && s.key==="model_check")?.value;
-  const sp = (chk?.items || []).find(it => it.app===app && it.key===key)?.suggestedPrices?.[model];
-  if (!confirm(`${model} に切り替えます。よろしいですか？`)) return;
-  btn.disabled = true;
-  try {
-    // 料金表に単価がなければ、調べた単価も一緒に入れる
-    if (sp && !priceOf(model)) {
-      const prices = { ...PRICES() };
-      if (sp.type === "per_min") prices[model + "_per_min"] = sp.usd;
-      else prices[model] = sp.ain != null ? { ain:sp.ain, in:sp.in, out:sp.out } : { in:sp.in, out:sp.out };
-      await api({ action:"update", app:"global", key:"prices", value:prices });
-    }
-    await api({ action:"update", app, key, value:model });
-    toast(`${model} に切り替えました`); await load();
-  } catch (e) { toast(e.message, 4000); btn.disabled = false; }
+// ── モデルの確認結果（その欄に出す知らせ）──
+const CHECK = () => get("system","model_check")?.value;
+function noticeFor(s) {
+  const it = (CHECK()?.items || []).find(x => x.app===s.app && x.key===s.key);
+  if (!it) return null;
+  if (it.status === "switched" && s.value === it.switchedTo) return { kind:"info", html:`「${esc(it.current)}」の提供が終わったため、「${esc(it.switchedTo)}」に自動で切り替えました。` };
+  if (it.status === "retired" && s.value === it.current) return { kind:"info", html:`「${esc(it.current)}」の提供が終わったようです。別のモデルを選んでください。` };
+  if (it.status === "update" && s.value === it.current) return { kind:"update", item:it };
+  return null;
 }
 
 function render() {
-  renderUpdates();
-  const fx = SETTINGS.find(s => s.app==="global" && s.key==="usd_jpy");
-  $("fxVal").textContent = fx ? fx.value : "—";
-  $("fxAt").textContent = fx ? fmtAt(fx.updated_at) : "";
-
-  // アプリごとのモデル
-  $("apps").innerHTML = APPS.map(([app, name]) => {
-    const rows = SETTINGS.filter(s => s.app===app);
-    if (!rows.length) return "";
+  // アプリ
+  $("apps").innerHTML = APPS.map(a => {
+    const rows = SETTINGS.filter(s => s.app===a.id);
+    const open = `<a class="open" href="${urlOf(a.id)}" target="_blank" rel="noopener">開く</a>`;
+    if (!rows.length) return `<div class="noai"><div class="nm"><b>${esc(a.name)}</b><small>${esc(a.desc)}・AIなし</small></div>${open}</div>`;
     const brief = [...new Set(rows.map(s => String(s.value)))].join("・");
-    return `<details class="app" data-app="${esc(app)}"${OPEN.has(app) ? " open" : ""}><summary><b>${esc(name)}</b><span>${esc(brief)}</span></summary><div class="card">` + rows.map(s => `
-      <div class="item" data-app="${esc(s.app)}" data-key="${esc(s.key)}">
-        <div class="name">${esc(s.note || s.key)}</div>
-        <div class="line"><input list="models" value="${esc(s.value)}" data-orig="${esc(s.value)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="primary" disabled>保存</button></div>
-        <span class="price">${esc(priceText(s.value))}</span>
-        <small>${esc(s.key)}　${esc(fmtAt(s.updated_at))}</small>
-      </div>`).join("") + `</div></details>`;
+    const hasNews = rows.some(s => noticeFor(s));
+    return `<details class="app" data-app="${a.id}"${OPEN.has(a.id) ? " open" : ""}>
+      <summary><span class="chev">›</span><span class="nm"><b>${esc(a.name)}${hasNews ? '<span class="dot"></span>' : ""}</b><small>${esc(brief)}</small></span>${open}</summary>
+      <div class="models">${rows.map(itemHtml).join("")}</div></details>`;
   }).join("");
-  // 開いているアプリを覚えておく（次に開いたときも同じ状態に）
-  document.querySelectorAll("#apps details.app").forEach(d => d.ontoggle = () => {
-    d.open ? OPEN.add(d.dataset.app) : OPEN.delete(d.dataset.app);
-    try { localStorage.setItem("settings-open-apps", JSON.stringify([...OPEN])); } catch {}
+  document.querySelectorAll("#apps details.app").forEach(d => {
+    d.ontoggle = () => { d.open ? OPEN.add(d.dataset.app) : OPEN.delete(d.dataset.app); try { localStorage.setItem("settings-open-apps", JSON.stringify([...OPEN])); } catch {} };
+    d.querySelector("a.open").onclick = e => e.stopPropagation(); // 「開く」で折り畳みが動かないように
   });
-  document.querySelectorAll("#apps .item").forEach(el => {
-    const input = el.querySelector("input"), btn = el.querySelector("button");
-    input.oninput = () => { btn.disabled = input.value.trim() === input.dataset.orig; el.querySelector(".price").textContent = priceText(input.value.trim()); };
-    btn.onclick = () => save(el.dataset.app, el.dataset.key, input.value.trim(), btn);
-  });
+  document.querySelectorAll("#apps .item").forEach(bindItem);
 
-  // 料金表
-  const prices = SETTINGS.find(s => s.app==="global" && s.key==="prices")?.value || {};
-  const tok = Object.entries(prices).filter(([k, v]) => typeof v === "object");
-  const min = Object.entries(prices).filter(([k, v]) => typeof v === "number");
+  // お金まわり
+  const fx = get("global","usd_jpy");
+  $("fxVal").textContent = fx ? fx.value : "—";
+  $("fxAt").textContent = fx ? fmtAt(fx.updated_at) + " 更新" : "";
+  const prices = PRICES();
+  const tok = Object.entries(prices).filter(([, v]) => typeof v === "object");
+  const min = Object.entries(prices).filter(([, v]) => typeof v === "number");
   $("priceTable").innerHTML =
     `<tr><th>モデル</th><th class="n">in</th><th class="n">ain</th><th class="n">out</th></tr>` +
     tok.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${esc(v.in)}</td><td class="n">${esc(v.ain ?? "")}</td><td class="n">${esc(v.out)}</td></tr>`).join("") +
     `<tr><th>分単位のモデル</th><th></th><th></th><th class="n">／分</th></tr>` +
     min.map(([k, v]) => `<tr><td>${esc(k.replace(/_per_min$/, ""))}</td><td></td><td></td><td class="n">${esc(v)}</td></tr>`).join("");
   $("priceJson").value = JSON.stringify(prices, null, 2);
+
+  // 新しいモデルの確認
+  const chk = CHECK();
+  const news = SETTINGS.filter(s => noticeFor(s)).length;
+  const errs = (chk?.errors || []).map(e => /GEMINI/.test(e) ? "Google（APIキー未登録）" : e);
+  $("updStatus").innerHTML = chk
+    ? `最後の確認：${esc(fmtAt(chk.checked_at))}　${news ? `<b>${news}件の知らせがあります</b>（赤い点のアプリ）` : "新しいモデルはありません"}` +
+      (errs.length ? `<br>確認していない会社：${esc(errs.join("、"))}` : "")
+    : "まだ確認していません";
+}
+
+function itemHtml(s) {
+  const n = noticeFor(s);
+  const cands = n?.kind === "update" ? n.item.candidates : [];
+  const sp = n?.kind === "update" ? (n.item.suggestedPrices || {}) : {};
+  const opts = choicesFor(String(s.value), cands).map(m =>
+    `<option value="${esc(m)}"${m===s.value ? " selected" : ""}>${esc(m)}（${esc(priceShort(m, sp[m]))}）${cands.includes(m) ? " ★新しい版" : ""}</option>`).join("");
+  let notice = "";
+  if (n?.kind === "info") notice = `<div class="notice">${n.html}</div>`;
+  if (n?.kind === "update") notice = `<div class="notice"><b>新しい版があります</b>` + cands.map(c => {
+    const inTable = !!priceOf(c);
+    const tag = inTable ? "" : sp[c] ? ` <span class="badge">AIが調べた単価・要確認</span>${sp[c].url ? ` <a href="${esc(sp[c].url)}" target="_blank" rel="noopener">出典</a>` : ""}` : "";
+    return `<div class="row"><div class="t">${esc(c)}<span class="price">${esc(priceText(c, sp[c]))}</span>${tag}</div>
+      <button class="primary small" data-cand="${esc(c)}">これに替える</button></div>`;
+  }).join("") + `</div>`;
+  return `<div class="item" data-app="${esc(s.app)}" data-key="${esc(s.key)}">
+    <div class="name">${esc(s.note || s.key)}</div>
+    <div class="line">
+      <select>${opts}<option value="__other">その他（直接入力）…</option></select>
+      <button class="primary" disabled>保存</button>
+    </div>
+    <input class="other hidden" placeholder="モデル名を入力" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:6px">
+    <span class="price">${esc(priceText(s.value))}</span>
+    ${notice}
+  </div>`;
+}
+
+function bindItem(el) {
+  const { app, key } = el.dataset;
+  const s = get(app, key);
+  const sel = el.querySelector("select"), other = el.querySelector("input.other"), btn = el.querySelector(".line button"), price = el.querySelector(":scope > .price");
+  const chk = CHECK(), sp = (chk?.items || []).find(x => x.app===app && x.key===key)?.suggestedPrices || {};
+  const value = () => sel.value === "__other" ? other.value.trim() : sel.value;
+  const refresh = () => {
+    other.classList.toggle("hidden", sel.value !== "__other");
+    const v = value();
+    btn.disabled = !v || v === s.value;
+    price.textContent = v ? priceText(v, sp[v]) : "";
+  };
+  sel.onchange = () => { refresh(); if (sel.value === "__other") other.focus(); };
+  other.oninput = refresh;
+  btn.onclick = () => switchModel(app, key, value(), btn, sp[value()]);
+  el.querySelectorAll("button[data-cand]").forEach(b => b.onclick = () => switchModel(app, key, b.dataset.cand, b, sp[b.dataset.cand]));
 }
 
 async function load() {
@@ -294,20 +319,28 @@ async function load() {
   catch (e) { toast(e.message, 4000); }
 }
 
-async function save(app, key, value, btn) {
-  if (btn) btn.disabled = true;
+// モデルを切り替える（料金表に単価がなく、AIが調べた単価があれば一緒に入れる）
+async function switchModel(app, key, model, btn, suggested) {
+  if (!model) return;
+  if (btn.dataset.cand && !confirm(`${model} に切り替えます。よろしいですか？`)) return;
+  btn.disabled = true;
   try {
-    const { setting } = await api({ action:"update", app, key, value });
-    SETTINGS = SETTINGS.map(s => s.app===app && s.key===key ? setting : s);
-    render(); toast("保存しました");
-  } catch (e) { toast(e.message, 4000); if (btn) btn.disabled = false; }
+    if (suggested && !priceOf(model)) {
+      const prices = { ...PRICES() };
+      if (suggested.type === "per_min") prices[model + "_per_min"] = suggested.usd;
+      else prices[model] = suggested.ain != null ? { ain:suggested.ain, in:suggested.in, out:suggested.out } : { in:suggested.in, out:suggested.out };
+      await api({ action:"update", app:"global", key:"prices", value:prices });
+    }
+    await api({ action:"update", app, key, value:model });
+    toast(`${model} に切り替えました`); await load();
+  } catch (e) { toast(e.message, 4000); btn.disabled = false; }
 }
 
 $("fxRefresh").onclick = async () => {
   const b = $("fxRefresh"); b.disabled = true; b.textContent = "取得中…";
   try { const d = await api({ action:"refresh_fx" }); toast(`1ドル＝${d.usd_jpy}円 に更新しました`); await load(); }
   catch (e) { toast(e.message, 4000); }
-  b.disabled = false; b.textContent = "今すぐ取り直す";
+  b.disabled = false; b.textContent = "取り直す";
 };
 
 $("updCheck").onclick = async () => {
@@ -317,10 +350,13 @@ $("updCheck").onclick = async () => {
   b.disabled = false; b.textContent = "今すぐ確認";
 };
 
-$("priceSave").onclick = () => {
+$("priceSave").onclick = async () => {
   let v;
   try { v = JSON.parse($("priceJson").value); } catch { return toast("書き方が正しくありません（JSON）", 3500); }
-  save("global", "prices", v, $("priceSave"));
+  const b = $("priceSave"); b.disabled = true;
+  try { await api({ action:"update", app:"global", key:"prices", value:v }); toast("保存しました"); await load(); }
+  catch (e) { toast(e.message, 4000); }
+  b.disabled = false;
 };
 
 // ===== ログイン =====
