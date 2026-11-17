@@ -31,6 +31,9 @@ async function isAllowedUser(req: Request) {
   return !!u.email && allowed.includes(String(u.email).toLowerCase());
 }
 
+// OpenAI の読み上げで使える声
+const VOICES = ["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"];
+
 // 値のチェック（打ち間違いで各アプリが止まらないように）
 function validate(app: string, key: string, value: unknown): string | null {
   if (app === "global" && key === "usd_jpy") {
@@ -44,6 +47,9 @@ function validate(app: string, key: string, value: unknown): string | null {
       if (!p || typeof p !== "object" || typeof p.in !== "number" || typeof p.out !== "number") return `${k} には in と out の数字が必要です`;
     }
     return null;
+  }
+  if (key === "tts_voice") {
+    return typeof value === "string" && VOICES.includes(value.trim()) ? null : `声は ${VOICES.join(" / ")} から選んでください`;
   }
   if (key.endsWith("model") || key.endsWith("model_hq")) {
     return typeof value === "string" && /^[A-Za-z0-9._:\-]{2,80}$/.test(value.trim()) ? null : "モデル名は英数字と . _ - : だけで書いてください";

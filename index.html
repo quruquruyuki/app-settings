@@ -156,6 +156,7 @@ const APPS = [
   { id:"quick-note",    name:"Notion Quick", desc:"Notionへのクイック入力" },
   { id:"sake-wine-log", name:"酒ログ",       desc:"ワイン・日本酒などの記録" },
   { id:"diary",         name:"日記",         desc:"日記と過去の自分との対話" },
+  { id:"eikaiwa",       name:"英会話",       desc:"AIと話す英会話の練習" },
   { id:"pdf-app",       name:"PDFノート",    desc:"PDFの閲覧・書き込み" },
   { id:"workout-log",   name:"運動ログ",     desc:"筋トレ・ランの記録" },
   { id:"stock-trader",  name:"株ラボ",       desc:"株の自動売買の検証" },
@@ -208,11 +209,12 @@ const isAudio = m => /transcribe|whisper/.test(m);
 
 // その欄で選べるモデル：今のモデルと同じ会社・同じ種類（文章／録音の文字起こし／話しながらの文字起こし）のもの＋新しい版の候補
 const isLive = m => /live|realtime/.test(m);
+const isTts = m => /tts/.test(m);
 function choicesFor(current, candidates) {
   const list = new Set([current, ...candidates]);
   for (const k of Object.keys(PRICES())) {
     const m = k.replace(/_per_min$/, "");
-    if (providerOf(m) === providerOf(current) && isAudio(m) === isAudio(current) && isLive(m) === isLive(current)) list.add(m);
+    if (providerOf(m) === providerOf(current) && isAudio(m) === isAudio(current) && isLive(m) === isLive(current) && isTts(m) === isTts(current)) list.add(m);
   }
   return [...list];
 }
@@ -234,7 +236,7 @@ function render() {
     const rows = SETTINGS.filter(s => s.app===a.id);
     const open = `<a class="open" href="${urlOf(a.id)}" target="_blank" rel="noopener">開く</a>`;
     if (!rows.length) return `<div class="noai"><div class="nm"><b>${esc(a.name)}</b><small>${esc(a.desc)}・AIなし</small></div>${open}</div>`;
-    const brief = [...new Set(rows.map(s => String(s.value)))].join("・");
+    const brief = [...new Set(rows.filter(s => s.key !== "tts_voice").map(s => String(s.value)))].join("・");
     const hasNews = rows.some(s => noticeFor(s));
     return `<details class="app" data-app="${a.id}"${OPEN.has(a.id) ? " open" : ""}>
       <summary><span class="chev">›</span><span class="nm"><b>${esc(a.name)}${hasNews ? '<span class="dot"></span>' : ""}</b><small>${esc(brief)}</small></span>${open}</summary>
@@ -270,7 +272,19 @@ function render() {
     : "まだ確認していません";
 }
 
+// 読み上げの声（OpenAI）。モデルではないので値段は出さない
+const VOICES = ["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"];
+function voiceHtml(s) {
+  const list = VOICES.includes(s.value) ? VOICES : [s.value, ...VOICES];
+  return `<div class="item voice" data-app="${esc(s.app)}" data-key="${esc(s.key)}">
+    <div class="name">${esc(s.note || s.key)}</div>
+    <div class="line"><select>${list.map(v => `<option value="${esc(v)}"${v===s.value ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+      <button class="primary" disabled>保存</button></div>
+  </div>`;
+}
+
 function itemHtml(s) {
+  if (s.key === "tts_voice") return voiceHtml(s);
   const n = noticeFor(s);
   const cands = n?.kind === "update" ? n.item.candidates : [];
   const sp = n?.kind === "update" ? (n.item.suggestedPrices || {}) : {};
@@ -299,6 +313,16 @@ function itemHtml(s) {
 function bindItem(el) {
   const { app, key } = el.dataset;
   const s = get(app, key);
+  if (el.classList.contains("voice")) {
+    const sel = el.querySelector("select"), btn = el.querySelector("button");
+    sel.onchange = () => btn.disabled = sel.value === s.value;
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try { await api({ action:"update", app, key, value:sel.value }); toast(`声を ${sel.value} にしました`); await load(); }
+      catch (e) { toast(e.message, 4000); btn.disabled = false; }
+    };
+    return;
+  }
   const sel = el.querySelector("select"), other = el.querySelector("input.other"), btn = el.querySelector(".line button"), price = el.querySelector(":scope > .price");
   const chk = CHECK(), sp = (chk?.items || []).find(x => x.app===app && x.key===key)?.suggestedPrices || {};
   const value = () => sel.value === "__other" ? other.value.trim() : sel.value;
