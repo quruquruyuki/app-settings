@@ -59,10 +59,11 @@ async function listModels(p: Provider): Promise<string[]> {
 
 // ── 「系統」と「版」に分ける ──
 // claude-sonnet-5-5 → 系統 claude-sonnet ／ 版 [5,5]、gemini-3.5-flash → gemini-flash ／ [3,5]、gpt-6-luna → gpt-luna ／ [6]
-// 日付つきのスナップショット（20260805 など）は候補にしない
+// 日付つきのスナップショット（20260805、2025-12-15 など）は候補にしない
 function parse(id: string) {
   const parts = id.split("-");
   if (parts.some((t) => /^\d{6,}$/.test(t))) return null;
+  if (/-\d{4}-\d{2}-\d{2}$/.test(id)) return null; // gpt-4o-mini-tts-2025-12-15 のような日付つきの固定版も候補にしない
   const nums: number[] = [], words: string[] = [];
   for (const t of parts) {
     if (/^\d+(\.\d+)*$/.test(t)) nums.push(...t.split(".").map(Number));
