@@ -66,7 +66,7 @@
   .notice .t { flex:1; min-width:0; }
   .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; }
 
-  /* お金まわり */
+  /* 料金と残高 */
   .sub { font-size:13px; color:var(--sub); font-weight:600; margin:14px 0 6px; }
   .fx { display:flex; align-items:center; gap:10px; padding-top:10px; }
   .fx .v { flex:1; }
@@ -107,7 +107,7 @@
   <div class="apps" id="apps"></div>
   <div class="hint" style="margin-top:8px">「開く」でアプリへ。名前をタップすると使うAIモデルを変えられます（各アプリには1分以内に反映）。</div>
 
-  <h2>お金まわり</h2>
+  <h2>料金と残高</h2>
   <div class="card">
     <div class="fx">
       <div class="v">1ドル＝<b id="fxVal">—</b>円<small id="fxAt"></small></div>
@@ -246,7 +246,7 @@ function render() {
   });
   document.querySelectorAll("#apps .item").forEach(bindItem);
 
-  // お金まわり
+  // 料金と残高
   const fx = get("global","usd_jpy");
   $("fxVal").textContent = fx ? fx.value : "—";
   $("fxAt").textContent = fx ? fmtAt(fx.updated_at) + " 更新" : "";
