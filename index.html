@@ -44,6 +44,11 @@
   .toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%); background:var(--fg); color:#fff;
     padding:10px 16px; border-radius:10px; font-size:14px; opacity:0; transition:.3s; pointer-events:none; max-width:90vw; z-index:20; }
   .toast.show { opacity:1; }
+  .links { display:flex; flex-direction:column; gap:8px; padding-top:10px; }
+  .links a { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--fg); background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  .links a b { flex:1; font-weight:600; }
+  .links a span { color:var(--sub); font-size:12px; }
+  .links a::after { content:"›"; color:var(--sub); font-size:20px; line-height:1; }
   .login { max-width:360px; margin:40px auto; }
   .price { display:block; color:var(--sub); font-size:12px; margin-top:3px; }
   .upd { border-top:1px solid var(--line); padding:10px 0 4px; }
@@ -74,6 +79,16 @@
 <!-- 設定 -->
 <main id="appView" class="hidden">
   <div class="hint">ここで変えた内容は、各アプリの次の操作から（遅くとも1分以内に）反映されます。</div>
+
+  <h2>残高を見る</h2>
+  <div class="card">
+    <div class="links">
+      <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener"><b>Claude（Anthropic）</b><span>残高・入金</span></a>
+      <a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" rel="noopener"><b>OpenAI</b><span>残高・入金</span></a>
+      <a href="https://platform.openai.com/settings/organization/usage" target="_blank" rel="noopener"><b>OpenAI</b><span>使用量</span></a>
+    </div>
+    <div class="hint" style="margin-top:8px">各社の管理画面が開きます（ログインが必要です）。残高はAPIでは取れないため、ここから見に行きます。</div>
+  </div>
 
   <h2>モデルの更新</h2>
   <div class="card">
