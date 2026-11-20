@@ -64,6 +64,7 @@
   .notice { margin-top:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; line-height:1.5; }
   .notice .row { margin-top:6px; }
   .notice .t { flex:1; min-width:0; }
+  a.repo { display:inline-block; margin-top:12px; font-size:13px; color:var(--blue); text-decoration:none; }
   .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; }
 
   /* 料金と残高 */
@@ -137,6 +138,20 @@
     <div class="row"><button class="small" id="updCheck">今すぐ確認</button></div>
     <div class="hint" style="margin-top:8px">毎週月曜の朝に自動で確認し、新しい版があれば該当アプリの欄に表示します。切り替えはボタンを押したときだけ（使っているモデルの提供が終わったときだけは自動で切り替えます）。</div>
   </div>
+
+  <h2>開発</h2>
+  <div class="card">
+    <div class="sub">Supabase（quruquruyuki's Project）</div>
+    <div class="links">
+      <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg" target="_blank" rel="noopener"><b>プロジェクト</b><span>管理画面のトップ</span></a>
+      <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/editor" target="_blank" rel="noopener"><b>表</b><span>データを見る</span></a>
+      <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/functions" target="_blank" rel="noopener"><b>Edge Functions</b><span>関数・ログ</span></a>
+      <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/functions/secrets" target="_blank" rel="noopener"><b>シークレット</b><span>APIキー</span></a>
+      <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/auth/users" target="_blank" rel="noopener"><b>ログインのアカウント</b><span>Authentication</span></a>
+    </div>
+    <div class="sub">GitHub</div>
+    <div class="links" id="ghLinks"></div>
+  </div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -162,6 +177,13 @@ const APPS = [
   { id:"stock-trader",  name:"株ラボ",       desc:"株の自動売買の検証" },
 ];
 const urlOf = id => `https://quruquruyuki.github.io/${id}/`;
+const repoOf = id => `https://github.com/quruquruyuki/${id}`;
+function renderGh() {
+  const all = [...APPS, { id:"app-settings", name:"共通設定", desc:"このページ" }];
+  $("ghLinks").innerHTML =
+    `<a href="https://github.com/quruquruyuki?tab=repositories" target="_blank" rel="noopener"><b>リポジトリ一覧</b><span>quruquruyuki</span></a>` +
+    all.map(a => `<a href="${repoOf(a.id)}" target="_blank" rel="noopener"><b>${esc(a.name)}</b><span>${esc(a.id)}</span></a>`).join("");
+}
 
 async function api(body) {
   const { data } = await sb.auth.getSession();
@@ -231,6 +253,7 @@ function noticeFor(s) {
 }
 
 function render() {
+  renderGh();
   // アプリ
   $("apps").innerHTML = APPS.map(a => {
     const rows = SETTINGS.filter(s => s.app===a.id);
@@ -240,7 +263,7 @@ function render() {
     const hasNews = rows.some(s => noticeFor(s));
     return `<details class="app" data-app="${a.id}"${OPEN.has(a.id) ? " open" : ""}>
       <summary><span class="chev">›</span><span class="nm"><b>${esc(a.name)}${hasNews ? '<span class="dot"></span>' : ""}</b><small>${esc(brief)}</small></span>${open}</summary>
-      <div class="models">${rows.map(itemHtml).join("")}</div></details>`;
+      <div class="models">${rows.map(itemHtml).join("")}<a class="repo" href="${repoOf(a.id)}" target="_blank" rel="noopener">GitHub のリポジトリを開く ›</a></div></details>`;
   }).join("");
   document.querySelectorAll("#apps details.app").forEach(d => {
     d.ontoggle = () => { d.open ? OPEN.add(d.dataset.app) : OPEN.delete(d.dataset.app); try { localStorage.setItem("settings-open-apps", JSON.stringify([...OPEN])); } catch {} };
