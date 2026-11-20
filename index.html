@@ -186,6 +186,7 @@ const APPS = [
   { id:"pdf-app",       name:"PDFノート",    desc:"PDFの閲覧・書き込み" },
   { id:"workout-log",   name:"運動ログ",     desc:"筋トレ・ランの記録" },
   { id:"stock-trader",  name:"株ラボ",       desc:"株の自動売買の検証" },
+  { id:"stash",         name:"ストック",     desc:"保存した記事・投稿の整理とサイトのキャンバス" },
 ];
 const urlOf = id => `https://quruquruyuki.github.io/${id}/`;
 const repoOf = id => `https://github.com/quruquruyuki/${id}`;
@@ -232,6 +233,7 @@ function priceText(model, suggested) {
   const p = priceOf(model, suggested);
   if (!p) return "料金表に単価がありません";
   if (p.type === "per_min") return `1分 $${p.usd}（1時間 約${yen(p.usd*60)}円）`;
+  if (!p.out && isEmbed(model)) return `100万トークンあたり $${p.in}（約${yen(p.in)}円）`;
   return `100万トークンあたり 入力 $${p.in}・出力 $${p.out}（約${yen(p.in)}円・${yen(p.out)}円）` + (p.ain ? `／音声入力 $${p.ain}` : "");
 }
 // 選択肢に添える短い値段
@@ -240,6 +242,7 @@ function priceShort(model, suggested) {
   if (!p) return "単価なし";
   if (p.type === "per_min") return `1時間 約${yen(p.usd*60)}円`;
   if (p.ain) return `音声入力$${p.ain}・出力$${p.out}`;
+  if (!p.out && isEmbed(model)) return `$${p.in}`;
   return `入力$${p.in}・出力$${p.out}`;
 }
 const providerOf = m => m.startsWith("claude-") ? "claude" : m.startsWith("gemini-") ? "gemini" : "openai";
@@ -248,11 +251,12 @@ const isAudio = m => /transcribe|whisper/.test(m);
 // その欄で選べるモデル：今のモデルと同じ会社・同じ種類（文章／録音の文字起こし／話しながらの文字起こし）のもの＋新しい版の候補
 const isLive = m => /live|realtime/.test(m);
 const isTts = m => /tts/.test(m);
+const isEmbed = m => /embed/.test(m);
 function choicesFor(current, candidates) {
   const list = new Set([current, ...candidates]);
   for (const k of Object.keys(PRICES())) {
     const m = k.replace(/_per_min$/, "");
-    if (providerOf(m) === providerOf(current) && isAudio(m) === isAudio(current) && isLive(m) === isLive(current) && isTts(m) === isTts(current)) list.add(m);
+    if (providerOf(m) === providerOf(current) && isAudio(m) === isAudio(current) && isLive(m) === isLive(current) && isTts(m) === isTts(current) && isEmbed(m) === isEmbed(current)) list.add(m);
   }
   return [...list];
 }
