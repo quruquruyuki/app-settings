@@ -64,6 +64,13 @@
   .notice { margin-top:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; line-height:1.5; }
   .notice .row { margin-top:6px; }
   .notice .t { flex:1; min-width:0; }
+  details.fold { border-top:1px solid var(--line); }
+  details.fold:first-of-type { border-top:none; }
+  details.fold > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:12px 0; font-size:15px; font-weight:600; }
+  details.fold > summary::-webkit-details-marker { display:none; }
+  details.fold > summary .chev { width:10px; color:var(--sub); font-size:20px; line-height:1; font-weight:400; transition:transform .15s; }
+  details.fold[open] > summary .chev { transform:rotate(90deg); }
+  details.fold > .links { padding-bottom:10px; }
   a.repo { display:inline-block; margin-top:12px; font-size:13px; color:var(--blue); text-decoration:none; }
   .badge { display:inline-block; font-size:11px; padding:1px 6px; border-radius:4px; background:#fdecc8; color:#89632a; }
 
@@ -141,7 +148,8 @@
 
   <h2>開発</h2>
   <div class="card">
-    <div class="sub">Supabase（quruquruyuki's Project）</div>
+    <details class="fold" data-fold="dev-supabase">
+    <summary><span class="chev">›</span>Supabase（quruquruyuki's Project）</summary>
     <div class="links">
       <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg" target="_blank" rel="noopener"><b>プロジェクト</b><span>管理画面のトップ</span></a>
       <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/editor" target="_blank" rel="noopener"><b>表</b><span>データを見る</span></a>
@@ -149,8 +157,11 @@
       <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/functions/secrets" target="_blank" rel="noopener"><b>シークレット</b><span>APIキー</span></a>
       <a href="https://supabase.com/dashboard/project/oqtyorwlrnrcyjxiassg/auth/users" target="_blank" rel="noopener"><b>ログインのアカウント</b><span>Authentication</span></a>
     </div>
-    <div class="sub">GitHub</div>
+    </details>
+    <details class="fold" data-fold="dev-github">
+    <summary><span class="chev">›</span>GitHub</summary>
     <div class="links" id="ghLinks"></div>
+    </details>
   </div>
 </main>
 
@@ -200,6 +211,11 @@ const fmtAt = s => s ? new Date(s).toLocaleString("ja-JP", { month:"numeric", da
 let SETTINGS = [];
 let OPEN = new Set();
 try { OPEN = new Set(JSON.parse(localStorage.getItem("settings-open-apps") || "[]")); } catch {}
+// 「開発」欄の折り畳み（開いている欄を覚えておく。最初は閉じる）
+document.querySelectorAll("details.fold").forEach(d => {
+  if (OPEN.has(d.dataset.fold)) d.open = true;
+  d.ontoggle = () => { d.open ? OPEN.add(d.dataset.fold) : OPEN.delete(d.dataset.fold); try { localStorage.setItem("settings-open-apps", JSON.stringify([...OPEN])); } catch {} };
+});
 
 // ── 値段（料金表の単価から。円は今の為替レートで計算）──
 const get = (app, key) => SETTINGS.find(s => s.app===app && s.key===key);
