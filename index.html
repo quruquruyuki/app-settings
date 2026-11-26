@@ -178,7 +178,7 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&
 
 // アプリの一覧（id は共通設定の app 名＝リポジトリ名）。AIを使わないアプリは「開く」だけ
 const APPS = [
-  { id:"minutes",       name:"議事録",       desc:"録音・文字起こし（会議・面談・セミナー・商談）" },
+  { id:"minutes",       name:"議事録",       desc:"録音・文字起こし（会議・セミナー・商談）" },
   { id:"quick-note",    name:"Notion Quick", desc:"Notionへのクイック入力" },
   { id:"sake-wine-log", name:"酒ログ",       desc:"ワイン・日本酒などの記録" },
   { id:"diary",         name:"日記",         desc:"日記と過去の自分との対話" },
@@ -186,6 +186,7 @@ const APPS = [
   { id:"pdf-app",       name:"PDFノート",    desc:"PDFの閲覧・書き込み" },
   { id:"workout-log",   name:"運動ログ",     desc:"筋トレ・ランの記録" },
   { id:"stock-trader",  name:"株ラボ",       desc:"株の自動売買の検証" },
+  { id:"talk-coach",    name:"会話コーチ",   desc:"商談・相談中の確認漏れや提案をその場で表示" },
   { id:"stash",         name:"ストック",     desc:"保存した記事・投稿の整理とサイトのキャンバス" },
 ];
 const urlOf = id => `https://quruquruyuki.github.io/${id}/`;
